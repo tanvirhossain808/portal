@@ -61,18 +61,28 @@ materials
 */
 
 
+//debugObject
+debugObject.portalColorStart = "#000000";
+debugObject.portalColorEnd = "#ffffff";
+
+gui.addColor(debugObject, "portalColorStart").onChange(() => portalLightMaterial.uniforms.uColorStart.value.set(debugObject.portalColorStart))
+gui.addColor(debugObject, "portalColorEnd").onChange(() => portalLightMaterial.uniforms.uColorEnd.value.set(debugObject.portalColorEnd))
 //baked materials
 const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
 
 //portal light material
 const portalLightMaterial = new THREE.ShaderMaterial({
     uniforms: {
-        uTime: { value: 0 }
+        uTime: { value: 0 },
+        uColorStart: { value: new THREE.Color(debugObject.portalColorStart) },
+        uColorEnd: { value: new THREE.Color(debugObject.portalColorEnd) }
     },
     vertexShader: portalVertex,
     fragmentShader: portalFragment
 
 })
+
+
 
 //pole light material
 
