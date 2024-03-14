@@ -8,6 +8,11 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
  * Base
  */
 // Debug
+
+//Debug object
+
+const debugObject = {}
+
 const gui = new dat.GUI({
     width: 400
 })
@@ -57,7 +62,7 @@ materials
 const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
 
 //portal light material
-const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
 
 //pole light material
 
@@ -90,6 +95,31 @@ gltfLoader.load(
     }
 )
 
+//Fireflies
+
+//Geometry
+
+const fireFliesGeometry = new THREE.BufferGeometry()
+
+const fireFliesCount = 30
+const firefliesPositionArray = new Float32Array(fireFliesCount * 3)
+
+for (let i = 0; i < fireFliesCount; i++) {
+    firefliesPositionArray[i * 3] = Math.random() * 4
+    firefliesPositionArray[i * 3 + 1] = Math.random() * 4
+    firefliesPositionArray[i * 3 + 2] = Math.random() * 4
+}
+
+fireFliesGeometry.setAttribute("position", new THREE.BufferAttribute(firefliesPositionArray, 3))
+
+//Material
+
+const firesFliesMaterial = new THREE.PointsMaterial({ size: 0.1, sizeAttenuation: true })
+
+//points
+
+const fireFlies = new THREE.Points(fireFliesGeometry, firesFliesMaterial)
+scene.add(fireFlies)
 
 /**
  * Sizes
@@ -137,6 +167,9 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding
+debugObject.clearColor = "#201919"
+renderer.setClearColor(debugObject.clearColor)
+gui.addColor(debugObject, "clearColor").onChange(() => renderer.setClearColor(debugObject.clearColor))
 
 /**
  * Animate
