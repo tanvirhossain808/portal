@@ -5,8 +5,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import fireFliesVertexShader from "./shaders/fireflies/vertex.glsl"
 import fireFliesFragmentShader from "./shaders/fireflies/fragmentShader.glsl"
-
-
+import portalVertex from "./shaders/Portal/vertex.glsl"
+import portalFragment from "./shaders/Portal/fragment.glsl"
 /**
  * Base
  */
@@ -65,7 +65,14 @@ materials
 const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
 
 //portal light material
-const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+const portalLightMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+        uTime: { value: 0 }
+    },
+    vertexShader: portalVertex,
+    fragmentShader: portalFragment
+
+})
 
 //pole light material
 
@@ -211,6 +218,7 @@ const tick = () => {
 
     controls.update()
     firesFliesMaterial.uniforms.uTime.value = elapsedTime
+    portalLightMaterial.uniforms.uTime.value = elapsedTime
     // Render
     renderer.render(scene, camera)
 
