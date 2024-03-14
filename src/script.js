@@ -107,27 +107,39 @@ const fireFliesGeometry = new THREE.BufferGeometry()
 const fireFliesCount = 30
 const firefliesPositionArray = new Float32Array(fireFliesCount * 3)
 
+const scaleArray = new Float32Array(fireFliesCount)
+
 for (let i = 0; i < fireFliesCount; i++) {
     firefliesPositionArray[i * 3] = (Math.random() - 0.5) * 4
     firefliesPositionArray[i * 3 + 1] = Math.random() * 2
     firefliesPositionArray[i * 3 + 2] = (Math.random() - 0.5) * 4
+
+    scaleArray[i] = Math.random()
 }
 
 fireFliesGeometry.setAttribute("position", new THREE.BufferAttribute(firefliesPositionArray, 3))
-
+fireFliesGeometry.setAttribute("aScale", new THREE.BufferAttribute(scaleArray, 1))
 //Material
 
 const firesFliesMaterial = new THREE.ShaderMaterial({
     uniforms:
     {
-        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
+        uTime: { value: 0 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uSize: { value: 100 }
     },
     vertexShader: fireFliesVertexShader,
-    fragmentShader: fireFliesFragmentShader
+    fragmentShader: fireFliesFragmentShader,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+
+
 
 
 })
 
+gui.add(firesFliesMaterial.uniforms.uSize, "value").min(0).max(500).step(1).name("fireFlexSize")
 //points
 
 const fireFlies = new THREE.Points(fireFliesGeometry, firesFliesMaterial)
@@ -194,9 +206,11 @@ const clock = new THREE.Clock()
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
-    // Update controls
-    controls.update()
+    // update fire material
 
+
+    controls.update()
+    firesFliesMaterial.uniforms.uTime.value = elapsedTime
     // Render
     renderer.render(scene, camera)
 
