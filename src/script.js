@@ -3,6 +3,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import fireFliesVertexShader from "./shaders/fireflies/vertex.glsl"
+import fireFliesFragmentShader from "./shaders/fireflies/fragmentShader.glsl"
+
 
 /**
  * Base
@@ -105,16 +108,25 @@ const fireFliesCount = 30
 const firefliesPositionArray = new Float32Array(fireFliesCount * 3)
 
 for (let i = 0; i < fireFliesCount; i++) {
-    firefliesPositionArray[i * 3] = Math.random() * 4
-    firefliesPositionArray[i * 3 + 1] = Math.random() * 4
-    firefliesPositionArray[i * 3 + 2] = Math.random() * 4
+    firefliesPositionArray[i * 3] = (Math.random() - 0.5) * 4
+    firefliesPositionArray[i * 3 + 1] = Math.random() * 2
+    firefliesPositionArray[i * 3 + 2] = (Math.random() - 0.5) * 4
 }
 
 fireFliesGeometry.setAttribute("position", new THREE.BufferAttribute(firefliesPositionArray, 3))
 
 //Material
 
-const firesFliesMaterial = new THREE.PointsMaterial({ size: 0.1, sizeAttenuation: true })
+const firesFliesMaterial = new THREE.ShaderMaterial({
+    uniforms:
+    {
+        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
+    },
+    vertexShader: fireFliesVertexShader,
+    fragmentShader: fireFliesFragmentShader
+
+
+})
 
 //points
 
@@ -141,6 +153,9 @@ window.addEventListener('resize', () => {
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    //update fire flies
+    firesFliesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
 })
 
 /**
